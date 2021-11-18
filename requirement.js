@@ -24,10 +24,10 @@ Publication
 
 Book
   -GET
-    -to get all books
-    -to get specific books
-    -to get a list of books based on Category
-    -to get a list of books based on Author
+    -to get all books 👌
+    -to get specific books 👌
+    -to get a list of books based on Category 👌
+    -to get a list of books based on Author 
 
   -POST
     -to add new book
