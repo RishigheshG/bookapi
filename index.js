@@ -104,4 +104,80 @@ OurAPP.post("/publication/new", (req,res) => {
   return res.json({message: "publication was added!"});
 });
 
+//Route   - /book/update/:isbn
+//Des     - to update any details of the book
+//Access  - Public
+//Methods - PUT
+//Params  - ISBN
+//Body    - none
+
+OurAPP.put("/book/update/:isbn", (req,res) => {
+  const {updatedBook} = req.body;
+  const {isbn} = req.params;
+
+  const book = Database.Book.map((book) => {
+    if(book.ISBN === isbn) {
+      return {...book, ...updatedBook};
+    }
+    return book;
+  })
+
+  return res.json(book);
+});
+
+//Route   - /bookAuthor/update/:isbn
+//Des     - update/add new author to the book
+//Access  - Public
+//Methods - PUT
+//Params  - ISBN
+//Body    - none
+
+OurAPP.put("/bookAuthor/update/:isbn", (req,res) => {
+  const {newAuthor} = req.body;
+  const {isbn} = req.params;
+
+  const book = Database.Book.map((book) => {
+    if(book.ISBN === isbn){
+      if(!book.authors.includes(newAuthor)){
+        return book.authors.push(newAuthor);
+      }
+      return book;
+    }
+    return book;
+  })
+
+  const author = Database.Author.map((author) => {
+    if(author.id === newAuthor){
+      if(!author.books.includes(isbn)){
+        return author.books.push(isbn);
+      }
+      return author;
+    }
+    return author;
+  })
+
+  return res.json({book: Database.Book, author: Database.Author});
+});
+
+//Route   - /author/update/:id
+//Des     - update any details of the author
+//Access  - Public
+//Methods - PUT
+//Params  - id
+//Body    - none
+
+OurAPP.put("/author/update/:id", (req, res) => {
+  const {updateAuthor} = req.body;
+  const {id} = req.params;
+
+  const author = Database.Author.map((author) => {
+    if(author.id === parseInt(id)){
+      return {...author, ...updateAuthor}
+    }
+    return author
+  })
+
+  return res.json(author);
+});
+
 OurAPP.listen(4000, () => console.log("Server is running!"));
