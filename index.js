@@ -180,4 +180,82 @@ OurAPP.put("/author/update/:id", (req, res) => {
   return res.json(author);
 });
 
+//Route   - /book/updateTitle/:isbn
+//Des     - update title of a book
+//Access  - Public
+//Methods - PUT
+//Params  - isbn
+//Body    - none
+
+OurAPP.put("/book/updateTitle/:isbn", (req,res) => {
+  const {updatedBook} = req.body;
+  const {isbn} = req.params;
+
+  Database.Book.forEach((book) => {
+    if(book.ISBN === isbn) {
+      book.title = updatedBook.title;
+      return;
+    }
+    return book;
+  });
+
+  return res.json(Database.Book);
+});
+
+//Route   - /book/delete/:isbn
+//Des     - delete a book
+//Access  - Public
+//Methods - DELETE
+//Params  - isbn
+//Body    - none
+
+OurAPP.delete("/book/delete/:isbn", (req,res) => {
+  const {isbn} = req.params;
+
+  const filteredBooks = Database.Book.filter((book) => book.ISBN !== isbn);
+
+  Database.Book = filteredBooks;
+
+  return res.json(Database.Book);
+});
+
+//Route   - /book/delete/author
+//Des     - delete an author from a book
+//Access  - Public
+//Methods - DELETE
+//Params  - isbn, id
+//Body    - none
+
+OurAPP.delete("/book/delete/author/:isbn/:id", (req,res) => {
+  const {isbn,id} = req.params;
+
+  Database.Book.forEach((book) => {
+    if(book.ISBN === isbn){
+      if(!book.authors.includes(parseInt(id))){
+        return book;
+      }
+
+      book.authors = book.authors.filter((databaseId) => databaseId!== parseInt(id))
+
+      return book;
+    }
+    return book;
+  })
+
+  Database.Author.forEach((author) =>{
+    if(author.id === parseInt(id)){
+      if(!author.books.includes(isbn)){
+        return author;
+      }
+      
+      author.books = author.books.filter((book) => book !== isbn)
+
+      return author;
+    }
+    return author;
+  })
+
+  return res.json({book: Database.Book, author: Database.Author})
+});
+
 OurAPP.listen(4000, () => console.log("Server is running!"));
