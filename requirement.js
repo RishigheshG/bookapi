@@ -43,8 +43,8 @@ Book
 
 Authors
   -GET
-    -to get all authors
-    -to get specific authors
+    -to get all authors 👌
+    -to get specific authors 
     -to get a list of author based on a book
 
   -POST

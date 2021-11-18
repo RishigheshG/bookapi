@@ -1,4 +1,5 @@
 //Temporary database
+//Array of objects
 
 let Book = [
   {
