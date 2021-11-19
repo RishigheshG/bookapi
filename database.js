@@ -1,5 +1,11 @@
-//Temporary database
-//Array of objects
+// Temporary database
+// Array of objects
+
+// Documents in MongoDB have no structure restrictions.
+// Documents work similar to JSON format in MongoDB
+// Documents have a key value pair (similar to JSON format)
+// No specific schema required beforehand like SQL database.
+// Structuring the data is easier in MongoDB
 
 let Book = [
   {
