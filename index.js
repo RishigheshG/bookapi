@@ -2,6 +2,10 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 
+//Schema Import
+const Book = require("./schema/book.js");
+const Author = require("./schema/author.js");
+const Publication = require("./schema/publication.js");
 
 //database
 const Database = require("./database")
@@ -11,7 +15,6 @@ mongoose.connect(process.env.MONGO_URI)
 .catch((err) => {
   console.log(err);
 });
-
 
 //initialization
 const OurAPP = express();
@@ -28,8 +31,9 @@ OurAPP.get("/", (request, response) => {
 //Methods - GET
 //Params  - none
 //Body    - none
-OurAPP.get("/book" , (req,res) => {
-  return res.json({books: Database.Book});
+OurAPP.get("/book" , async(req,res) => {
+  const getAllBooks = await Book.find();
+  return res.json(getAllBooks);
 })
 
 //Route   - /book/:bookID
@@ -38,12 +42,16 @@ OurAPP.get("/book" , (req,res) => {
 //Methods - GET
 //Params  - bookID
 //Body    - none
-OurAPP.get("/book/:bookID" , (req,res) => {
-  const getBook = Database.Book.filter(
-      (book) => book.ISBN === req.params.bookID
-    );
+OurAPP.get("/book/:bookID" , async (req,res) => {
+  const getSpecificBook = await Book.findOne({ISBN: req.params.bookID})
 
-  return res.json({book: getBook});
+  if(!getSpecificBook){
+    return res.json({
+      error: `No book found for the ISBN of ${req.params.bookID}`
+    })
+  }
+
+  return res.json({book: getSpecificBook});
 })
 
 //Route   - /book/c/:category
@@ -53,13 +61,15 @@ OurAPP.get("/book/:bookID" , (req,res) => {
 //Params  - bookID
 //Body    - none
 
-OurAPP.get("/book/c/:category" , (req,res) => {
-  const getBook = Database.Book.filter(
-      (book) => book.category.includes(req.params.category)
-    );
+OurAPP.get("/book/c/:category" , async(req,res) => {
+  const getSpecificBooks = await BookModel.findOne({category: req.params.category});
 
-  return res.json({book: getBook});
-})
+  if(!getSpecificBooks){
+    return res.json({error: `No book found for the category ${req.params.category}`});
+  }
+
+  return res.json({books: getSpecificBooks});
+});
 
 //Route   - /author
 //Des     - To get all authors
@@ -68,9 +78,10 @@ OurAPP.get("/book/c/:category" , (req,res) => {
 //Params  - none
 //Body    - none
 
-OurAPP.get("/author" , (req,res) => {
-  return res.json({author: Database.Author});
-})
+OurAPP.get("/author" , async(req,res) => {
+  const getAllAuthors = await Author.find();
+  return res.json({author: getAllAuthors});
+});
 
 //Route   - /book/new
 //Des     - Add new book
@@ -79,9 +90,14 @@ OurAPP.get("/author" , (req,res) => {
 //Params  - none
 //Body    - none
 
-OurAPP.post("/book/new" , (req,res) => {
-  console.log(req.body);
-  return res.json({message: "Book Added Successfully!"});
+OurAPP.post("/book/new" , async(req,res) => {
+  try{
+    const {newBook} = req.body;
+    await Book.create(newBook);
+    return res.json({message: "Book added to the database"});
+  }catch(error){
+    return res.json({error: error.message});
+  }
 });
 
 //Route   - /author/new
